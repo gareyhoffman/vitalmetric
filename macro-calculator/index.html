@@ -10,7 +10,7 @@
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="../css/styles.css?t=DEV">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥩</text></svg>">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Ccircle cx='60' cy='60' r='48' stroke='%230A6E6E20' stroke-width='8' fill='none'/%3E%3Ccircle cx='60' cy='60' r='52' stroke='%230A6E6E' stroke-width='5' fill='none' stroke-dasharray='120 206' stroke-dashoffset='20' stroke-linecap='round'/%3E%3Cpath d='M60 8 A52 52 0 0 1 103 38' stroke='%23FF6B4A' stroke-width='5' stroke-linecap='round' fill='none'/%3E%3Ccircle cx='60' cy='60' r='5' fill='%230A6E6E'/%3E%3Cline x1='60' y1='60' x2='82' y2='32' stroke='%230A6E6E' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E">
 <style>
 :root {
   --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 20px;
@@ -48,7 +48,20 @@ a { color: var(--color-primary); text-decoration: none; } a:hover { text-decorat
 .mobile-nav-close { align-self: flex-end; background: none; border: none; font-size: var(--text-2xl); cursor: pointer; color: var(--color-text-muted); }
 @media (min-width: 768px) { .desktop-nav { display: flex; } .hamburger { display: none; } }
 
-.hero { background: linear-gradient(135deg, #0A4E6E, #0D7080); color: #fff; text-align: center; padding: var(--space-10) 0 var(--space-8); }
+.hero { background: linear-gradient(135deg, #0A4E6E, #0D7080); color: #fff; text-align: center; padding: var(--space-10) 0 var(--space-8);   position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+}
+.hero > * {
+  position: relative;
+}
 .hero-heading { font-size: var(--text-4xl); font-weight: 800; letter-spacing: -0.5px; margin-bottom: var(--space-3); line-height: 1.15; }
 .hero-accent { color: #FF8A6A; }
 .hero-paragraph { font-size: 15px; opacity: 0.88; line-height: 1.6; margin-bottom: var(--space-4); }
@@ -143,7 +156,7 @@ select.input { appearance: none; background-image: url("data:image/svg+xml,%3Csv
 
 <header class="header">
   <div class="header-inner content">
-    <a href="/" style="text-decoration:none"><span class="header-brand">VitalMetric</span></a>
+    <a href="/" style="text-decoration:none"><svg class="header-logo" viewBox="0 0 120 120" fill="none" width="48" height="48" aria-label="VitalMetric logo"><circle cx="60" cy="60" r="48" stroke="rgba(10,110,110,0.12)" stroke-width="8" fill="none"/><circle cx="60" cy="60" r="52" stroke="#0A6E6E" stroke-width="5" fill="none" stroke-dasharray="120 206" stroke-dashoffset="20" stroke-linecap="round"/><path d="M60 8 A52 52 0 0 1 103 38" stroke="#FF6B4A" stroke-width="5" stroke-linecap="round" fill="none"/><circle cx="60" cy="60" r="5" fill="#0A6E6E"/><line x1="60" y1="60" x2="82" y2="32" stroke="#0A6E6E" stroke-width="3.5" stroke-linecap="round"/></svg><div class="header-brand-wrap"><span class="header-brand">VitalMetric</span><span class="header-tagline">Know Your Numbers</span></div></a>
     <nav class="desktop-nav">
       <a href="/">Metabolic Age</a>
       <a href="/body-composition">Body Comp</a>
