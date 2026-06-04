@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Our Methodology — VitalMetric</title>
+<meta name="description" content="How VitalMetric calculates metabolic age, body composition, and other health metrics. All formulas, data sources, and scientific references.">
+<link rel="stylesheet" href="../css/styles.css?t=DEV">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📐</text></svg>">
+<style>
+:root {
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 20px;
+  --space-6: 24px; --space-8: 32px; --space-10: 40px; --space-12: 48px;
+  --text-xs: 0.75rem; --text-sm: 0.875rem; --text-base: 1rem; --text-lg: 1.125rem;
+  --text-xl: 1.25rem; --text-2xl: 1.5rem; --text-3xl: 1.875rem; --text-4xl: 2.25rem;
+  --color-primary: #0A6E6E; --color-primary-dark: #085A5A; --color-primary-light: #D4ECE6;
+  --color-accent: #FF6B4A; --color-bg: #F4F7F7; --color-surface: #FFFFFF;
+  --color-text: #1A1E1E; --color-text-muted: #4A5A5A; --color-text-faint: #7A8E8E;
+  --color-border: #D4DCDC; --color-border-light: #E4EAEA;
+  --radius-sm: 6px; --radius-lg: 12px; --radius-xl: 16px; --radius-full: 999px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06); --shadow-lg: 0 4px 24px rgba(0,0,0,0.08);
+  --border-width: 1px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--color-bg); color: var(--color-text);
+  font-size: var(--text-base); line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--color-primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.content { max-width: 800px; margin: 0 auto; padding: 0 var(--space-4); }
+
+/* ── Header ── */
+.header { background: var(--color-surface); border-bottom: var(--border-width) solid var(--color-border-light); position: sticky; top: 0; z-index: 100; }
+.header-inner { display: flex; align-items: center; justify-content: space-between; padding: var(--space-3) var(--space-4); }
+.header-brand { font-size: var(--text-lg); font-weight: 800; color: var(--color-primary); }
+.desktop-nav { display: none; gap: var(--space-4); align-items: center; }
+.desktop-nav a { font-size: var(--text-sm); font-weight: 600; color: var(--color-text-muted); }
+.hamburger { display: flex; flex-direction: column; gap: 5px; background: none; border: none; padding: var(--space-2); cursor: pointer; }
+.hamburger-line { width: 24px; height: 2px; background: var(--color-text); border-radius: 2px; }
+.mobile-nav { display: none; position: fixed; inset: 0; background: var(--color-surface); z-index: 200; flex-direction: column; padding: var(--space-8) var(--space-5); gap: var(--space-4); }
+.mobile-nav a { font-size: var(--text-xl); font-weight: 700; color: var(--color-text); }
+.mobile-nav-close { align-self: flex-end; background: none; border: none; font-size: var(--text-2xl); cursor: pointer; color: var(--color-text-muted); }
+@media (min-width: 768px) { .desktop-nav { display: flex; } .hamburger { display: none; } }
+
+/* ── Hero ── */
+.hero { background: linear-gradient(135deg, #0A6E6E, #085A5A); color: #fff; text-align: center; padding: var(--space-10) 0 var(--space-8); }
+.hero-heading { font-size: var(--text-4xl); font-weight: 800; letter-spacing: -0.5px; margin-bottom: var(--space-3); line-height: 1.15; }
+.hero-paragraph { font-size: 15px; opacity: 0.88; line-height: 1.6; }
+
+/* ── Page layout ── */
+.page { padding: var(--space-8) 0 var(--space-12); }
+.page-intro { font-size: var(--text-lg); color: var(--color-text-muted); margin-bottom: var(--space-8); line-height: 1.7; }
+
+.method-section { margin-bottom: var(--space-10); }
+.method-section h2 { font-size: var(--text-2xl); font-weight: 800; margin-bottom: var(--space-2); color: var(--color-primary); }
+.method-section h3 { font-size: var(--text-lg); font-weight: 700; margin: var(--space-5) 0 var(--space-2); color: var(--color-text); }
+.method-section p { margin-bottom: var(--space-3); color: var(--color-text-muted); }
+.method-section ul { margin-bottom: var(--space-4); padding-left: var(--space-5); color: var(--color-text-muted); }
+.method-section li { margin-bottom: var(--space-1); }
+
+.formula-box { background: var(--color-surface); border: var(--border-width) solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-5); margin: var(--space-4) 0; overflow-x: auto; }
+.formula-box code { font-family: "SF Mono", "Fira Code", Consolas, monospace; font-size: var(--text-sm); display: block; white-space: pre; line-height: 1.8; color: var(--color-text); }
+
+.ref-list { list-style: none; padding: 0; margin: var(--space-4) 0; }
+.ref-list li { margin-bottom: var(--space-3); padding: var(--space-3) var(--space-4); background: var(--color-surface); border-radius: var(--radius-lg); border: var(--border-width) solid var(--color-border-light); font-size: var(--text-sm); line-height: 1.6; }
+.ref-num { display: inline-block; width: 24px; height: 24px; background: var(--color-primary); color: #fff; border-radius: 50%; text-align: center; line-height: 24px; font-size: var(--text-xs); font-weight: 700; margin-right: var(--space-2); flex-shrink: 0; }
+.ref-authors { font-weight: 600; color: var(--color-text); }
+.ref-title { font-style: italic; }
+.ref-journal { color: var(--color-text-faint); }
+.ref-link { font-size: var(--text-xs); margin-left: var(--space-1); }
+
+.disclaimer { background: #FFF8F0; border: 1px solid #FFD5B8; border-radius: var(--radius-lg); padding: var(--space-5); margin-top: var(--space-8); }
+.disclaimer h3 { color: #CC5A1E; font-size: var(--text-base); margin-bottom: var(--space-2); }
+.disclaimer p { font-size: var(--text-sm); color: #8A5A3A; margin: 0; }
+
+/* ── Footer ── */
+.footer { background: var(--color-text); color: #8aaeae; padding: var(--space-6) 0; font-size: var(--text-sm); }
+.footer-grid { display: grid; grid-template-columns: 1fr; gap: var(--space-4); text-align: center; }
+.footer-nav { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-3); }
+.footer-nav a { color: #8aaeae; font-size: var(--text-sm); }
+.footer-nav a:hover { color: #4ac2c2; }
+.footer-copy { color: #5a7e7e; margin-top: var(--space-3); }
+.skip-link { position: absolute; top: -100%; left: var(--space-4); background: var(--color-primary); color: #fff; padding: var(--space-2) var(--space-4); border-radius: var(--radius-sm); z-index: 1000; font-size: var(--text-sm); font-weight: 600; }
+.skip-link:focus { top: var(--space-2); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to main content</a>
+
+<header class="header" role="banner">
+  <div class="header-inner content">
+    <a href="/" style="text-decoration:none"><span class="header-brand">VitalMetric</span></a>
+    <nav class="desktop-nav" aria-label="Main navigation">
+      <a href="/">Metabolic Age</a>
+      <a href="/body-composition">Body Comp</a>
+      <a href="/methodology" style="color:var(--color-primary)">Methodology</a>
+    </nav>
+    <button class="hamburger" aria-label="Open navigation menu" aria-expanded="false">
+      <span class="hamburger-line"></span><span class="hamburger-line"></span><span class="hamburger-line"></span>
+    </button>
+    <nav class="mobile-nav" aria-label="Main navigation">
+      <button class="mobile-nav-close" aria-label="Close navigation menu">✕</button>
+      <a href="/">Metabolic Age</a>
+      <a href="/body-composition">Body Composition</a>
+      <a href="/methodology">Methodology</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero" aria-label="Hero">
+  <div class="content">
+    <h1 class="hero-heading">Our Methodology</h1>
+    <p class="hero-paragraph">How we calculate every number — and the science behind it.</p>
+  </div>
+</section>
+
+<main id="main" class="page">
+  <div class="content">
+
+    <p class="page-intro">
+      Every number VitalMetric produces is backed by peer-reviewed research and established medical formulas. We don't invent numbers — we implement published science. Here's exactly what we use, how it works, and where it comes from.
+    </p>
+
+    <!-- ═══ Metabolic Age ═══ -->
+    <section class="method-section">
+      <h2>🧬 Metabolic Age Calculator</h2>
+
+      <h3>Basal Metabolic Rate (BMR)</h3>
+      <p>We calculate BMR using the <strong>Mifflin-St Jeor equation</strong>, published in 1990 and widely considered the most accurate predictive BMR equation for the general population — more accurate than the older Harris-Benedict equation. It estimates the calories your body burns at complete rest.</p>
+
+      <div class="formula-box">
+        <code>Male:   BMR = 10 × weight(kg) + 6.25 × height(cm) − 5 × age(y) + 5
+Female: BMR = 10 × weight(kg) + 6.25 × height(cm) − 5 × age(y) − 161</code>
+      </div>
+
+      <h3>Total Daily Energy Expenditure (TDEE)</h3>
+      <p>TDEE is your BMR multiplied by an activity factor, using standard multipliers from the dietary reference intake guidelines:</p>
+      <ul>
+        <li>Sedentary (desk job, little exercise) → ×1.2</li>
+        <li>Light (1–3 days/week) → ×1.375</li>
+        <li>Moderate (3–5 days/week) → ×1.55</li>
+        <li>Active (6–7 days/week) → ×1.725</li>
+        <li>Extreme (athlete, physical job) → ×1.9</li>
+      </ul>
+
+      <h3>Metabolic Age</h3>
+      <p>Your metabolic age is determined by comparing your calculated BMR to population average BMR values across age groups, derived from the <strong>NHANES (National Health and Nutrition Examination Survey)</strong> conducted by the CDC. We find the age bracket whose average BMR is closest to yours. A higher-than-average BMR produces a younger metabolic age; a lower BMR produces an older one.</p>
+
+      <h3>References</h3>
+      <ol class="ref-list">
+        <li><span class="ref-num">1</span> <span class="ref-authors">Mifflin MD, St Jeor ST, Hill LA, Scott BJ, Daugherty SA, Koh YO.</span> <span class="ref-title">A new predictive equation for resting energy expenditure in healthy individuals.</span> <span class="ref-journal">Am J Clin Nutr. 1990;51(2):241–247.</span> <a class="ref-link" href="https://doi.org/10.1093/ajcn/51.2.241" target="_blank" rel="noopener">doi:10.1093/ajcn/51.2.241</a></li>
+        <li><span class="ref-num">2</span> <span class="ref-authors">National Center for Health Statistics.</span> <span class="ref-title">National Health and Nutrition Examination Survey (NHANES).</span> <span class="ref-journal">Centers for Disease Control and Prevention.</span> <a class="ref-link" href="https://www.cdc.gov/nchs/nhanes/index.html" target="_blank" rel="noopener">cdc.gov/nchs/nhanes</a></li>
+      </ol>
+    </section>
+
+    <!-- ═══ Body Composition ═══ -->
+    <section class="method-section">
+      <h2>⚖️ Body Composition Dashboard</h2>
+
+      <h3>Body Mass Index (BMI)</h3>
+      <p>BMI is weight in kilograms divided by the square of height in meters (kg/m²). The formula was devised by Belgian mathematician Adolphe Quetelet in the 1830s and remains the most widely used population-level weight classification tool. We use the <strong>WHO international classification</strong> for categories:</p>
+
+      <div class="formula-box">
+        <code>BMI = weight(kg) / height(m)²
+
+Underweight: &lt;18.5    Normal: 18.5–24.9
+Overweight: 25–29.9    Obese I: 30–34.9
+Obese II:   35–39.9    Obese III: ≥40</code>
+      </div>
+
+      <h3>Body Fat Percentage — US Navy Method</h3>
+      <p>The US Navy developed this circumference-based method in 1984 at the Naval Health Research Center. It estimates body fat percentage using neck, waist, and (for women) hip measurements combined with height. While not as precise as DEXA or hydrostatic weighing, it correlates well with those methods and is widely used because it requires only a measuring tape.</p>
+
+      <div class="formula-box">
+        <code>Male:   BF% = 86.010 × log₁₀(waist − neck) − 70.041 × log₁₀(height) + 36.76
+Female: BF% = 163.205 × log₁₀(waist + hip − neck) − 97.684 × log₁₀(height) − 78.387
+
+All measurements in inches.</code>
+      </div>
+
+      <h3>Body Roundness Index (BRI)</h3>
+      <p>Published in 2013 by Thomas et al., BRI is a newer geometric measure that combines waist circumference and height to estimate body shape. Unlike BMI (which only uses weight and height), BRI accounts for <em>where</em> fat is distributed. A BRI of 1–3 is considered healthy. Higher values indicate a rounder body shape associated with increased visceral fat.</p>
+
+      <div class="formula-box">
+        <code>BRI = 364.2 − 365.5 × √(1 − (WC/2π)² / (0.5×H)²)
+
+WC = waist circumference (m), H = height (m)</code>
+      </div>
+
+      <h3>Waist-to-Height Ratio (WHtR)</h3>
+      <p>The "keep your waist to less than half your height" rule emerged from a 2010 systematic review and 2012 meta-analysis led by Dr. Margaret Ashwell. WHtR has been shown to be a better predictor of cardiometabolic risk than BMI alone. A ratio below 0.5 is considered healthy.</p>
+
+      <div class="formula-box">
+        <code>WHtR = waist / height   (same units for both)
+
+&lt;0.4: Low      0.4–0.49: Healthy
+0.5–0.59: Elevated risk    ≥0.6: High risk</code>
+      </div>
+
+      <h3>References</h3>
+      <ol class="ref-list" start="3">
+        <li><span class="ref-num">3</span> <span class="ref-authors">World Health Organization.</span> <span class="ref-title">Obesity: preventing and managing the global epidemic. Report of a WHO consultation.</span> <span class="ref-journal">WHO Tech Rep Ser. 2000;894:i–xii, 1–253.</span> <a class="ref-link" href="https://iris.who.int/handle/10665/42330" target="_blank" rel="noopener">WHO TRS 894</a></li>
+        <li><span class="ref-num">4</span> <span class="ref-authors">Hodgdon JA, Beckett MB.</span> <span class="ref-title">Prediction of percent body fat for U.S. Navy men from body circumferences and height.</span> <span class="ref-journal">Report No. 84-11. Naval Health Research Center, San Diego, CA; 1984.</span></li>
+        <li><span class="ref-num">5</span> <span class="ref-authors">Hodgdon JA, Beckett MB.</span> <span class="ref-title">Prediction of percent body fat for U.S. Navy women from body circumferences and height.</span> <span class="ref-journal">Report No. 84-29. Naval Health Research Center, San Diego, CA; 1984.</span></li>
+        <li><span class="ref-num">6</span> <span class="ref-authors">Thomas DM, Bredlau C, Bosy-Westphal A, et al.</span> <span class="ref-title">Relationships between body roundness with body fat and visceral adipose tissue emerging from a new geometrical model.</span> <span class="ref-journal">Obesity. 2013;21(11):2264–2271.</span> <a class="ref-link" href="https://doi.org/10.1002/oby.20408" target="_blank" rel="noopener">doi:10.1002/oby.20408</a></li>
+        <li><span class="ref-num">7</span> <span class="ref-authors">Ashwell M, Gunn P, Gibson S.</span> <span class="ref-title">Waist-to-height ratio is a better screening tool than waist circumference and BMI for adult cardiometabolic risk factors: systematic review and meta-analysis.</span> <span class="ref-journal">Obes Rev. 2012;13(3):275–286.</span> <a class="ref-link" href="https://doi.org/10.1111/j.1467-789X.2011.00952.x" target="_blank" rel="noopener">doi:10.1111/j.1467-789X.2011.00952.x</a></li>
+        <li><span class="ref-num">8</span> <span class="ref-authors">Browning LM, Hsieh SD, Ashwell M.</span> <span class="ref-title">A systematic review of waist-to-height ratio as a screening tool for the prediction of cardiovascular disease and diabetes: 0·5 could be a suitable global boundary value.</span> <span class="ref-journal">Nutr Res Rev. 2010;23(2):247–269.</span> <a class="ref-link" href="https://doi.org/10.1017/S0954422410000144" target="_blank" rel="noopener">doi:10.1017/S0954422410000144</a></li>
+      </ol>
+    </section>
+
+    <!-- ═══ Accuracy ═══ -->
+    <section class="method-section">
+      <h2>🔬 Accuracy & Limitations</h2>
+      <p>All our calculators use validated, published formulas — but they are <strong>estimates</strong>, not clinical measurements. Here's what you should know:</p>
+      <ul>
+        <li><strong>BMR formulas</strong> are accurate within ~10% for most people. They can be less accurate for very muscular or very obese individuals.</li>
+        <li><strong>Navy body fat</strong> correlates with DEXA at r ≈ 0.85–0.90, but individual error can be ±3–5%.</li>
+        <li><strong>BRI and WHtR</strong> are population-level screening tools — they indicate risk patterns, not diagnoses.</li>
+        <li><strong>Metabolic age</strong> compares your BMR to population averages. A "younger" metabolic age doesn't guarantee better health — it's one data point among many.</li>
+      </ul>
+      <p>For medical decisions, always consult a healthcare professional. These calculators are for educational and informational purposes only.</p>
+    </section>
+
+    <!-- ═══ Disclaimer ═══ -->
+    <div class="disclaimer">
+      <h3>⚠️ Medical Disclaimer</h3>
+      <p>VitalMetric provides health estimates based on published formulas and population data. These calculations are not medical diagnoses. Do not use them to self-diagnose, treat, or make decisions about your health without consulting a licensed medical professional. Body composition measurements vary by individual — no formula captures everyone perfectly.</p>
+    </div>
+
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="content">
+    <div class="footer-grid">
+      <div class="footer-nav">
+        <a href="/">Metabolic Age</a>
+        <a href="/body-composition">Body Comp</a>
+        <a href="/methodology">Methodology</a>
+        <a href="/about">About</a>
+        <a href="/privacy">Privacy</a>
+      </div>
+      <p class="footer-copy">© 2026 VitalMetric. All calculators are estimates, not medical advice.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+const hamburger = document.querySelector('.hamburger');
+const mobileNav = document.querySelector('.mobile-nav');
+const mobileClose = document.querySelector('.mobile-nav-close');
+hamburger.addEventListener('click', () => { mobileNav.style.display = 'flex'; hamburger.setAttribute('aria-expanded', 'true'); });
+mobileClose.addEventListener('click', () => { mobileNav.style.display = 'none'; hamburger.setAttribute('aria-expanded', 'false'); });
+</script>
+</body>
+</html>
