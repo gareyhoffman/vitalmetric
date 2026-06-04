@@ -82,6 +82,12 @@
           <h2 class="calc-title">Metabolic Age Calculator</h2>
           <p class="calc-subtitle">Enter your details to see how your body compares.</p>
 
+          <!-- ═══ Unit Toggle ═══ -->
+          <div class="unit-toggle" role="radiogroup" aria-label="Measurement units">
+            <button class="unit-toggle-btn active" data-unit="metric" role="radio" aria-checked="true" id="unit-metric">Metric (cm / kg)</button>
+            <button class="unit-toggle-btn" data-unit="imperial" role="radio" aria-checked="false" id="unit-imperial">Imperial (in / lbs)</button>
+          </div>
+
           <div class="form-group">
             <label for="input-age">Age</label>
             <input id="input-age" class="input" type="number" placeholder="e.g. 52" value="52" min="10" max="120" required>
@@ -98,13 +104,13 @@
 
           <div class="form-row">
             <div class="form-group">
-              <label for="input-height">Height</label>
-              <input id="input-height" class="input" type="number" placeholder="cm" value="175" min="50" max="300" required>
+              <label for="input-height">Height <span class="unit-label" id="unit-label-height">(cm)</span></label>
+              <input id="input-height" class="input" type="number" placeholder="175" value="175" min="50" max="300" required>
               <span class="error-msg" id="error-height"></span>
             </div>
             <div class="form-group">
-              <label for="input-weight">Weight</label>
-              <input id="input-weight" class="input" type="number" placeholder="kg" value="82" min="20" max="400" required>
+              <label for="input-weight">Weight <span class="unit-label" id="unit-label-weight">(kg)</span></label>
+              <input id="input-weight" class="input" type="number" placeholder="82" value="82" min="20" max="400" required>
               <span class="error-msg" id="error-weight"></span>
             </div>
           </div>
@@ -283,6 +289,70 @@ const errorMsgs = {
 };
 
 const btn = $('calc-btn');
+const unitToggle = {
+  metric: $('unit-metric'),
+  imperial: $('unit-imperial'),
+  labelHeight: $('unit-label-height'),
+  labelWeight: $('unit-label-weight'),
+};
+
+// ── Unit system state ──
+let unitSystem = 'metric';
+
+const UNITS = {
+  metric: {
+    height: { label: '(cm)', placeholder: '175', min: 50, max: 300 },
+    weight: { label: '(kg)', placeholder: '82', min: 20, max: 400 },
+  },
+  imperial: {
+    height: { label: '(in)', placeholder: '69', min: 20, max: 120 },
+    weight: { label: '(lbs)', placeholder: '180', min: 40, max: 880 },
+  },
+};
+
+function toCm(inches) { return Math.round(inches * 2.54); }
+function toInches(cm) { return Math.round(cm / 2.54); }
+function toKg(lbs) { return Math.round(lbs * 0.453592); }
+function toLbs(kg) { return Math.round(kg / 0.453592); }
+
+function setUnit(system) {
+  unitSystem = system;
+  const u = UNITS[system];
+  const heightEl = inputs.height;
+  const weightEl = inputs.weight;
+  const currentHeight = parseFloat(heightEl.value);
+  const currentWeight = parseFloat(weightEl.value);
+
+  // Convert values
+  if (system === 'metric') {
+    heightEl.value = currentHeight ? toCm(currentHeight) : '';
+    weightEl.value = currentWeight ? toKg(currentWeight) : '';
+  } else {
+    heightEl.value = currentHeight ? toInches(currentHeight) : '';
+    weightEl.value = currentWeight ? toLbs(currentWeight) : '';
+  }
+
+  // Update labels
+  unitToggle.labelHeight.textContent = u.height.label;
+  unitToggle.labelWeight.textContent = u.weight.label;
+
+  // Update placeholders & constraints
+  heightEl.placeholder = u.height.placeholder;
+  heightEl.min = u.height.min;
+  heightEl.max = u.height.max;
+  weightEl.placeholder = u.weight.placeholder;
+  weightEl.min = u.weight.min;
+  weightEl.max = u.weight.max;
+
+  // Toggle active class
+  unitToggle.metric.classList.toggle('active', system === 'metric');
+  unitToggle.metric.setAttribute('aria-checked', system === 'metric');
+  unitToggle.imperial.classList.toggle('active', system === 'imperial');
+  unitToggle.imperial.setAttribute('aria-checked', system === 'imperial');
+}
+
+unitToggle.metric.addEventListener('click', () => setUnit('metric'));
+unitToggle.imperial.addEventListener('click', () => setUnit('imperial'));
 
 function clearErrors() {
   Object.values(errorMsgs).forEach(el => el.classList.remove('visible'));
@@ -306,18 +376,26 @@ function formatNumber(n) {
 function compute() {
   clearErrors();
 
+  let heightCm = parseInt(inputs.height.value, 10);
+  let weightKg = parseInt(inputs.weight.value, 10);
+
+  // Convert imperial to metric before passing to calc engine
+  if (unitSystem === 'imperial') {
+    heightCm = toCm(heightCm);
+    weightKg = toKg(weightKg);
+  }
+
   const data = {
     age: parseInt(inputs.age.value, 10),
     gender: inputs.gender.value,
-    heightCm: parseInt(inputs.height.value, 10),
-    weightKg: parseInt(inputs.weight.value, 10),
+    heightCm,
+    weightKg,
     activityLevel: inputs.activity.value,
   };
 
   const result = calcMetabolicAge(data);
 
   if (result.error) {
-    // Map calc errors to form fields
     const err = result.error.toLowerCase();
     if (err.includes('age')) showError('age', result.error);
     if (err.includes('height')) showError('height', result.error);
@@ -639,11 +717,54 @@ if (moreBtn && dropdown) {
   grid-template-columns: 1fr;
   gap: 0;
 }
+@media (min-width: 480px) {
+  .form-row {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+  }
+}
 .calc-btn {
   width: 100%;
   margin-top: var(--space-2);
   font-size: var(--text-lg);
   padding: var(--space-4) var(--space-5);
+}
+
+/* ── Unit Toggle ── */
+.unit-toggle {
+  display: flex;
+  gap: 0;
+  margin-bottom: var(--space-4);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-bg);
+}
+.unit-toggle-btn {
+  flex: 1;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.unit-toggle-btn.active {
+  background: var(--color-primary);
+  color: #fff;
+}
+.unit-toggle-btn:not(.active):hover {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+/* ── Unit Labels ── */
+.unit-label {
+  font-weight: 400;
+  color: var(--color-text-faint);
+  font-size: var(--text-xs);
 }
 
 /* ── Result Panel ── */
