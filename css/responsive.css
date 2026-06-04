@@ -1,0 +1,166 @@
+/* ═══════════════════════════════════════════════════════
+   VitalMetric — Responsive Styles
+   Mobile-first. Base = < 640px. Media queries add complexity.
+   ═══════════════════════════════════════════════════════ */
+
+/* ═══════════════════ Large phone / small tablet: ≥ 640px ═══════════ */
+@media (min-width: 640px) {
+  .content {
+    padding-left: var(--space-5);
+    padding-right: var(--space-5);
+  }
+
+  .section {
+    margin-bottom: var(--space-10);
+  }
+
+  /* Tool grid: 2 columns */
+  .tools-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Stats bar: 2 columns */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .hero-heading {
+    font-size: var(--text-5xl);
+  }
+
+  .hero-paragraph {
+    font-size: var(--text-base);
+  }
+}
+
+/* ═══════════════════ Tablet: ≥ 768px ═══════════════════════════ */
+@media (min-width: 768px) {
+  .content {
+    max-width: 720px;
+    padding-left: var(--space-6);
+    padding-right: var(--space-6);
+  }
+
+  .section {
+    margin-bottom: var(--space-10);
+  }
+
+  /* Calculator: side-by-side */
+  .calc-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .result-panel {
+    border-left: var(--border-width) solid var(--color-border-light);
+  }
+
+  /* Form: paired fields */
+  .form-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .hero {
+    padding: var(--space-12) 0;
+  }
+
+  .hero-heading {
+    font-size: var(--text-3xl);
+  }
+
+  .hero-paragraph {
+    max-width: 540px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-badge {
+    display: inline-block;
+  }
+
+  /* Stats: 4 columns */
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  /* Tool grid: 3 columns */
+  .tools-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .stat-card {
+    padding: var(--space-5);
+  }
+
+  .tool-card {
+    padding: var(--space-5);
+  }
+
+  /* Header: horizontal nav */
+  .hamburger {
+    display: none;
+  }
+
+  .desktop-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-left: auto;
+  }
+
+  .desktop-nav a {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-sm);
+    color: var(--color-text);
+    border-radius: var(--radius-sm);
+    transition: background 0.2s;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .desktop-nav a:hover {
+    background: rgba(10, 110, 110, 0.06);
+    text-decoration: none;
+  }
+
+  .header-logo {
+    height: 32px;
+  }
+}
+
+/* ═══════════════════ Desktop: ≥ 1024px ═══════════════════════════ */
+@media (min-width: 1024px) {
+  .content {
+    max-width: 880px;
+  }
+
+  .section {
+    margin-bottom: var(--space-12);
+  }
+
+  .hero {
+    padding: var(--space-16) 0 var(--space-12);
+  }
+
+  .hero-heading {
+    font-size: var(--text-5xl);
+  }
+
+  .hero-paragraph {
+    font-size: var(--text-lg);
+  }
+
+  .result-age-number {
+    font-size: var(--text-7xl);
+  }
+
+  .header-logo {
+    height: 42px;
+  }
+}
+
+/* ═══════════════════ Wide desktop: ≥ 1280px ═══════════════════════ */
+@media (min-width: 1280px) {
+  .header-inner {
+    max-width: 1100px;
+  }
+}
