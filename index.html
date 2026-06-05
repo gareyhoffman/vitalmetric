@@ -487,6 +487,46 @@ if (moreBtn && dropdown) {
     }
   });
 }
+
+// ── Tool card navigation ──
+document.querySelectorAll('.tool-card[role="button"]').forEach(card => {
+  card.addEventListener('click', () => {
+    const label = card.getAttribute('aria-label') || '';
+    const map = {
+      'Metabolic Age Calculator': '/',
+      'Body Composition Dashboard': '/body-composition/',
+      'Macro Calculator': '/macro-calculator/',
+      'Hydration Calculator': '/hydration-calculator/',
+      'Weight Loss Planner': '/weight-loss-planner/',
+      'Fasting Tracker': '/fasting-calculator/',
+    };
+    const url = map[label];
+    if (url) window.location.href = url;
+  });
+  card.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      card.click();
+    }
+  });
+});
+
+// ── Next button navigation ──
+const nextBtn = document.getElementById('next-btn');
+if (nextBtn) {
+  nextBtn.addEventListener('click', () => {
+    const label = nextBtn.textContent.trim();
+    const map = {
+      'Check Body Composition →': '/body-composition/',
+      'Check Metabolic Age →': '/',
+      'Check Macros →': '/macro-calculator/',
+      'Check Body Comp →': '/body-composition/',
+      'Check Macro Targets →': '/macro-calculator/',
+    };
+    const url = map[label] || '/';
+    if (url) window.location.href = url;
+  });
+}
 </script>
 
 <!-- ═══════════ Page styles ═══════════ -->
