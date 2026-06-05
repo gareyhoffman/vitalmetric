@@ -25,6 +25,7 @@ const PAGES = [
 const BASE = resolve('/opt/data/vitalmetric');
 
 // ── Known sub-pages (for verifying link targets) ──
+// Root-absolute (for sitemap, canonical refs)
 const KNOWN_PATHS = [
   '/',
   '/body-composition/',
@@ -35,6 +36,19 @@ const KNOWN_PATHS = [
   '/methodology/',
   '/about/',
   '/privacy/',
+];
+
+// Base-relative (for <a> nav links with <base href="/vitalmetric/">)
+const KNOWN_BASE_RELATIVE = [
+  '.',
+  'body-composition/',
+  'macro-calculator/',
+  'hydration-calculator/',
+  'weight-loss-planner/',
+  'fasting-calculator/',
+  'methodology/',
+  'about/',
+  'privacy/',
 ];
 
 // ── Required elements per page type ──
@@ -113,22 +127,50 @@ describe('Navigation links', () => {
       if (!html) return;
 
       it('all sub-page hrefs have trailing slashes', () => {
-        const hrefs = [...html.matchAll(/href="(\/[^"]*)"/g)].map(m => m[1]);
+        // Check both root-absolute (/foo/) and base-relative (foo/) formats
+        const hrefs = [...html.matchAll(/href="([^"]+)"/g)].map(m => m[1]);
         for (const href of hrefs) {
-          if (href === '/') continue;
-          if (href.startsWith('http') || href.startsWith('#') || href.startsWith('mailto')) continue;
+          if (href === '.' || href.startsWith('http') || href.startsWith('#') || href.startsWith('mailto') || href.startsWith('data:')) continue;
           const pathOnly = href.split('?')[0];
+          // Skip non-path values (data URIs, file extensions)
+          if (!pathOnly.includes('/')) continue;
+          if (/\.\w+$/.test(pathOnly)) continue; // file references like css/styles.css
           expect(pathOnly.endsWith('/'),
             `"${href}" in ${page.path} should end with /`
           ).toBe(true);
         }
       });
 
-      it('only links to known pages', () => {
-        // Only check <a> links, not <base> or other elements
-        const hrefs = [...html.matchAll(/<a[^>]*href="(\/[^"?]*\/)"/g)].map(m => m[1]);
+      it('nav links use base-relative paths (no leading /)', () => {
+        // All internal <a> links should be base-relative to work with <base> tag
+        const hrefs = [...html.matchAll(/<a[^>]*href="([^"]+)"/g)].map(m => m[1]);
         for (const href of hrefs) {
-          expect(KNOWN_PATHS).toContain(href);
+          // Skip external, anchors, mailto, root, data URIs, inline JS
+          if (href.startsWith('http') || href.startsWith('#') || href.startsWith('mailto')) continue;
+          if (href.startsWith('data:') || href === '.' || href.startsWith('javascript:')) continue;
+          // Internal nav paths should NOT be root-absolute in a <base> setup
+          const pathOnly = href.split('?')[0];
+          if (pathOnly.includes('/')) {
+            expect(pathOnly.startsWith('/')).toBe(false);
+          }
+        }
+      });
+
+      it('only links to known pages', () => {
+        // Check both root-absolute and base-relative formats
+        const hrefs = [...html.matchAll(/<a[^>]*href="([^"]+)"/g)].map(m => m[1]);
+        for (const href of hrefs) {
+          if (href.startsWith('http') || href.startsWith('#') || href.startsWith('mailto') || href.startsWith('data:')) continue;
+          if (href === '.' || href.startsWith('javascript:')) continue;
+          const pathOnly = href.split('?')[0];
+          // Must be in one of the known lists
+          const isRootAbs = KNOWN_PATHS.includes(pathOnly);
+          const isBaseRel = KNOWN_BASE_RELATIVE.includes(pathOnly);
+          if (pathOnly.includes('/')) {
+            expect(isRootAbs || isBaseRel,
+              `"${href}" in ${page.path} is not a known page path`
+            ).toBe(true);
+          }
         }
       });
 
