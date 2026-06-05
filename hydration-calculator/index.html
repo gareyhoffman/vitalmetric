@@ -117,7 +117,7 @@ select.input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xml
 <footer class="footer"><div class="content"><div class="footer-grid"><div class="footer-nav"><a href=".">Metabolic Age</a><a href="body-composition/">Body Comp</a><a href="macro-calculator/">Macro Calc</a><a href="hydration-calculator/">Hydration</a><a href="methodology/">Methodology</a><a href="about/">About</a><a href="privacy/">Privacy</a></div><p class="footer-copy">© 2026 VitalMetric</p></div></div></footer>
 
 <script type="module">
-import { calcHydration } from '../calculators/hydration.js';
+import { calcHydration } from 'calculators/hydration.js';
 const $=id=>document.getElementById(id);
 const wi=$('input-weight'), ai=$('input-activity'), ci=$('input-climate');
 window.unit='metric';
