@@ -494,12 +494,12 @@ document.querySelectorAll('.tool-card[role="button"]').forEach(card => {
   card.addEventListener('click', () => {
     const label = card.getAttribute('aria-label') || '';
     const map = {
-      'Metabolic Age Calculator': '/',
-      'Body Composition Dashboard': '/body-composition/',
-      'Macro Calculator': '/macro-calculator/',
-      'Hydration Calculator': '/hydration-calculator/',
-      'Weight Loss Planner': '/weight-loss-planner/',
-      'Fasting Tracker': '/fasting-calculator/',
+      'Metabolic Age Calculator': '/vitalmetric/',
+      'Body Composition Dashboard': '/vitalmetric/body-composition/',
+      'Macro Calculator': '/vitalmetric/macro-calculator/',
+      'Hydration Calculator': '/vitalmetric/hydration-calculator/',
+      'Weight Loss Planner': '/vitalmetric/weight-loss-planner/',
+      'Fasting Tracker': '/vitalmetric/fasting-calculator/',
     };
     const url = map[label];
     if (url) window.location.href = url;
@@ -518,13 +518,13 @@ if (nextBtn) {
   nextBtn.addEventListener('click', () => {
     const label = nextBtn.textContent.trim();
     const map = {
-      'Check Body Composition →': '/body-composition/',
-      'Check Metabolic Age →': '/',
-      'Check Macros →': '/macro-calculator/',
-      'Check Body Comp →': '/body-composition/',
-      'Check Macro Targets →': '/macro-calculator/',
+      'Check Body Composition →': '/vitalmetric/body-composition/',
+      'Check Metabolic Age →': '/vitalmetric/',
+      'Check Macros →': '/vitalmetric/macro-calculator/',
+      'Check Body Comp →': '/vitalmetric/body-composition/',
+      'Check Macro Targets →': '/vitalmetric/macro-calculator/',
     };
-    const url = map[label] || '/';
+    const url = map[label] || '/vitalmetric/';
     if (url) window.location.href = url;
   });
 }

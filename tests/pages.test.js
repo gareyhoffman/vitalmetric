@@ -184,20 +184,20 @@ describe('Navigation links', () => {
 
 // ── Tool card navigation (JS-driven, no href) ──
 const TOOL_CARD_LABEL_MAP = {
-  'Metabolic Age Calculator': '/',
-  'Body Composition Dashboard': '/body-composition/',
-  'Macro Calculator': '/macro-calculator/',
-  'Hydration Calculator': '/hydration-calculator/',
-  'Weight Loss Planner': '/weight-loss-planner/',
-  'Fasting Tracker': '/fasting-calculator/',
+  'Metabolic Age Calculator': '/vitalmetric/',
+  'Body Composition Dashboard': '/vitalmetric/body-composition/',
+  'Macro Calculator': '/vitalmetric/macro-calculator/',
+  'Hydration Calculator': '/vitalmetric/hydration-calculator/',
+  'Weight Loss Planner': '/vitalmetric/weight-loss-planner/',
+  'Fasting Tracker': '/vitalmetric/fasting-calculator/',
 };
 
 const NEXT_BTN_LABEL_MAP = {
-  'Check Body Composition →': '/body-composition/',
-  'Check Metabolic Age →': '/',
-  'Check Macros →': '/macro-calculator/',
-  'Check Body Comp →': '/body-composition/',
-  'Check Macro Targets →': '/macro-calculator/',
+  'Check Body Composition →': '/vitalmetric/body-composition/',
+  'Check Metabolic Age →': '/vitalmetric/',
+  'Check Macros →': '/vitalmetric/macro-calculator/',
+  'Check Body Comp →': '/vitalmetric/body-composition/',
+  'Check Macro Targets →': '/vitalmetric/macro-calculator/',
 };
 
 describe('JS-driven navigation', () => {
@@ -217,7 +217,7 @@ describe('JS-driven navigation', () => {
         expect(cards).toContain(label);
         // Verify the mapped path exists as a file
         const target = TOOL_CARD_LABEL_MAP[label];
-        const fsTarget = target === '/' ? 'index.html' : `${target.replace(/^\/|\/$/g, '')}/index.html`;
+        const fsTarget = target === '/vitalmetric/' ? 'index.html' : `${target.replace(/^\/vitalmetric\/|\/$/g, '')}/index.html`;
         expect(existsSync(resolve(BASE, fsTarget))).toBe(true);
       });
     }
@@ -269,11 +269,11 @@ describe('JS-driven navigation', () => {
         const anchorHref = anchorMatch?.[1];
 
         if (btnMatch && label && NEXT_BTN_LABEL_MAP[label]) {
-          it(`next button "${label}" maps to ${NEXT_BTN_LABEL_MAP[label]}`, () => {
-            const target = NEXT_BTN_LABEL_MAP[label];
-            const fsTarget = target === '/' ? 'index.html' : `${target.replace(/^\/|\/$/g, '')}/index.html`;
-            expect(existsSync(resolve(BASE, fsTarget))).toBe(true);
-          });
+            it(`next button "${label}" maps to ${NEXT_BTN_LABEL_MAP[label]}`, () => {
+              const target = NEXT_BTN_LABEL_MAP[label];
+              const fsTarget = target === '/vitalmetric/' ? 'index.html' : `${target.replace(/^\/vitalmetric\/|\/$/g, '')}/index.html`;
+              expect(existsSync(resolve(BASE, fsTarget))).toBe(true);
+            });
         }
 
         if (anchorHref) {
