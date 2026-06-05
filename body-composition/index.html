@@ -499,8 +499,8 @@ function updateHipVisibility() {
 inputs.gender.addEventListener('change', updateHipVisibility);
 updateHipVisibility();
 
-// ── Unit system state ──
-let unitSystem = 'metric';
+// ── Unit system state (via window — regular script registers listeners) ──
+window.unitSystem = 'metric';
 
 const UNITS = {
   metric: {
@@ -519,15 +519,15 @@ const UNITS = {
   },
 };
 
-function toCm(inches) { return Math.round(inches * 2.54); }
-function toInches(cm) { return Math.round(cm / 2.54); }
-function toKg(lbs) { return Math.round(lbs * 0.453592); }
-function toLbs(kg) { return Math.round(kg / 0.453592); }
+window.toCm = function(inches) { return Math.round(inches * 2.54); };
+window.toInches = function(cm) { return Math.round(cm / 2.54); };
+window.toKg = function(lbs) { return Math.round(lbs * 0.453592); };
+window.toLbs = function(kg) { return Math.round(kg / 0.453592); };
 
-function setUnit(system) {
-  const switchingToImperial = system === 'imperial' && unitSystem === 'metric';
+window.setUnit = function(system) {
+  const switchingToImperial = system === 'imperial' && window.unitSystem === 'metric';
 
-  unitSystem = system;
+  window.unitSystem = system;
   const u = UNITS[system];
 
   const measureFields = [
@@ -545,9 +545,9 @@ function setUnit(system) {
 
     if (convert && !isNaN(current)) {
       if (system === 'metric') {
-        el.value = toCm(current);
+        el.value = window.toCm(current);
       } else {
-        el.value = toInches(current);
+        el.value = window.toInches(current);
       }
     }
     // Keep hip empty if it was empty
@@ -565,10 +565,9 @@ function setUnit(system) {
   unitToggle.metric.setAttribute('aria-checked', system === 'metric');
   unitToggle.imperial.classList.toggle('active', system === 'imperial');
   unitToggle.imperial.setAttribute('aria-checked', system === 'imperial');
-}
+};
 
-unitToggle.metric.addEventListener('click', () => setUnit('metric'));
-unitToggle.imperial.addEventListener('click', () => setUnit('imperial'));
+// REMOVED: event listeners moved to regular script below
 
 function clearErrors() {
   Object.values(errorMsgs).forEach(el => el.classList.remove('visible'));
@@ -594,12 +593,12 @@ function compute() {
   let waistCm = parseInt(inputs.waist.value, 10);
   let hipCm = inputs.hip.value ? parseInt(inputs.hip.value, 10) : undefined;
 
-  if (unitSystem === 'imperial') {
-    heightCm = toCm(heightCm);
-    weightKg = toKg(weightKg);
-    neckCm = toCm(neckCm);
-    waistCm = toCm(waistCm);
-    if (hipCm != null) hipCm = toCm(hipCm);
+  if (window.unitSystem === 'imperial') {
+    heightCm = window.toCm(heightCm);
+    weightKg = window.toKg(weightKg);
+    neckCm = window.toCm(neckCm);
+    waistCm = window.toCm(waistCm);
+    if (hipCm != null) hipCm = window.toCm(hipCm);
   }
 
   const data = {
@@ -640,8 +639,8 @@ function compute() {
   results.whtrCat.textContent = result.whtrInfo.label;
 
   // Ideal weight range — show in active unit
-  if (unitSystem === 'imperial') {
-    results.ideal.textContent = `${toLbs(result.minIdealWeight)} – ${toLbs(result.maxIdealWeight)} lbs`;
+  if (window.unitSystem === 'imperial') {
+    results.ideal.textContent = `${window.toLbs(result.minIdealWeight)} – ${window.toLbs(result.maxIdealWeight)} lbs`;
   } else {
     results.ideal.textContent = `${result.minIdealWeight} – ${result.maxIdealWeight} kg`;
   }
@@ -671,6 +670,10 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
 
 <!-- ═══════════ Navigation JS ═══════════ -->
 <script>
+// Unit toggle listeners (regular script — avoids module-scoped event issues)
+document.getElementById('unit-metric').addEventListener('click', () => window.setUnit('metric'));
+document.getElementById('unit-imperial').addEventListener('click', () => window.setUnit('imperial'));
+
 const hamburger = document.querySelector('.hamburger');
 const mobileNav = document.querySelector('.mobile-nav');
 const mobileClose = document.querySelector('.mobile-nav-close');

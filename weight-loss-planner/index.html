@@ -321,8 +321,8 @@ const errorMsgs = {
 
 const btn = $('calc-btn');
 
-// ── Unit system state ──
-let unitSystem = 'metric';
+// ── Unit system state (via window — regular script registers listeners) ──
+window.unitSystem = 'metric';
 
 const UNITS = {
   metric: {
@@ -335,8 +335,8 @@ const UNITS = {
   },
 };
 
-function toKg(lbs) { return Math.round(lbs * 0.453592); }
-function toLbs(kg) { return Math.round(kg / 0.453592); }
+window.toKg = function(lbs) { return Math.round(lbs * 0.453592); };
+window.toLbs = function(kg) { return Math.round(kg / 0.453592); };
 
 const unitToggleBtns = {
   metric: $('unit-metric'),
@@ -345,8 +345,8 @@ const unitToggleBtns = {
   labelGoal: $('unit-label-goal'),
 };
 
-function setUnit(system) {
-  unitSystem = system;
+window.setUnit = function(system) {
+  window.unitSystem = system;
   const u = UNITS[system];
 
   const fields = [
@@ -358,7 +358,7 @@ function setUnit(system) {
     const info = u[key];
     const current = parseFloat(el.value);
     if (!isNaN(current)) {
-      el.value = system === 'metric' ? toKg(current) : toLbs(current);
+      el.value = system === 'metric' ? window.toKg(current) : window.toLbs(current);
     }
     el.placeholder = info.placeholder;
     el.min = info.min;
@@ -370,10 +370,9 @@ function setUnit(system) {
   unitToggleBtns.metric.setAttribute('aria-checked', system === 'metric');
   unitToggleBtns.imperial.classList.toggle('active', system === 'imperial');
   unitToggleBtns.imperial.setAttribute('aria-checked', system === 'imperial');
-}
+};
 
-unitToggleBtns.metric.addEventListener('click', () => setUnit('metric'));
-unitToggleBtns.imperial.addEventListener('click', () => setUnit('imperial'));
+// REMOVED: event listeners moved to regular script below
 
 function clearErrors() {
   Object.values(errorMsgs).forEach(el => el.classList.remove('visible'));
@@ -401,9 +400,9 @@ function compute() {
   let currentWeightKg = parseInt(inputs.currentWeight.value, 10);
   let goalWeightKg = parseInt(inputs.goalWeight.value, 10);
 
-  if (unitSystem === 'imperial') {
-    currentWeightKg = toKg(currentWeightKg);
-    goalWeightKg = toKg(goalWeightKg);
+  if (window.unitSystem === 'imperial') {
+    currentWeightKg = window.toKg(currentWeightKg);
+    goalWeightKg = window.toKg(goalWeightKg);
   }
 
   const result = calcWeightLoss({
@@ -446,7 +445,7 @@ function compute() {
   list.innerHTML = '';
 
   const milestones = result.milestones;
-  const displayWeight = unitSystem === 'imperial'
+  const displayWeight = window.unitSystem === 'imperial'
     ? (kg) => toLbs(kg) + ' lbs'
     : (kg) => kg + ' kg';
 
@@ -490,6 +489,10 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
 </script>
 
 <script>
+// Unit toggle listeners (regular script — avoids module-scoped event issues)
+document.getElementById('unit-metric').addEventListener('click', () => window.setUnit('metric'));
+document.getElementById('unit-imperial').addEventListener('click', () => window.setUnit('imperial'));
+
 const hb = document.querySelector('.hamburger'), mn = document.querySelector('.mobile-nav'), mc = document.querySelector('.mobile-nav-close');
 hb.addEventListener('click', () => { mn.style.display='flex'; hb.setAttribute('aria-expanded','true'); });
 mc.addEventListener('click', () => { mn.style.display='none'; hb.setAttribute('aria-expanded','false'); });

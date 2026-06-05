@@ -300,8 +300,8 @@ const unitToggle = {
   labelWeight: $('unit-label-weight'),
 };
 
-// ── Unit system state ──
-let unitSystem = 'metric';
+// ── Unit system state (via window — regular script registers listeners) ──
+window.unitSystem = 'metric';
 
 const UNITS = {
   metric: {
@@ -314,13 +314,13 @@ const UNITS = {
   },
 };
 
-function toCm(inches) { return Math.round(inches * 2.54); }
-function toInches(cm) { return Math.round(cm / 2.54); }
-function toKg(lbs) { return Math.round(lbs * 0.453592); }
-function toLbs(kg) { return Math.round(kg / 0.453592); }
+window.toCm = function(inches) { return Math.round(inches * 2.54); };
+window.toInches = function(cm) { return Math.round(cm / 2.54); };
+window.toKg = function(lbs) { return Math.round(lbs * 0.453592); };
+window.toLbs = function(kg) { return Math.round(kg / 0.453592); };
 
-function setUnit(system) {
-  unitSystem = system;
+window.setUnit = function(system) {
+  window.unitSystem = system;
   const u = UNITS[system];
   const heightEl = inputs.height;
   const weightEl = inputs.weight;
@@ -329,11 +329,11 @@ function setUnit(system) {
 
   // Convert values
   if (system === 'metric') {
-    heightEl.value = currentHeight ? toCm(currentHeight) : '';
-    weightEl.value = currentWeight ? toKg(currentWeight) : '';
+    heightEl.value = currentHeight ? window.toCm(currentHeight) : '';
+    weightEl.value = currentWeight ? window.toKg(currentWeight) : '';
   } else {
-    heightEl.value = currentHeight ? toInches(currentHeight) : '';
-    weightEl.value = currentWeight ? toLbs(currentWeight) : '';
+    heightEl.value = currentHeight ? window.toInches(currentHeight) : '';
+    weightEl.value = currentWeight ? window.toLbs(currentWeight) : '';
   }
 
   // Update labels
@@ -353,10 +353,9 @@ function setUnit(system) {
   unitToggle.metric.setAttribute('aria-checked', system === 'metric');
   unitToggle.imperial.classList.toggle('active', system === 'imperial');
   unitToggle.imperial.setAttribute('aria-checked', system === 'imperial');
-}
+};
 
-unitToggle.metric.addEventListener('click', () => setUnit('metric'));
-unitToggle.imperial.addEventListener('click', () => setUnit('imperial'));
+// REMOVED: event listeners moved to regular script below
 
 function clearErrors() {
   Object.values(errorMsgs).forEach(el => el.classList.remove('visible'));
@@ -384,9 +383,9 @@ function compute() {
   let weightKg = parseInt(inputs.weight.value, 10);
 
   // Convert imperial to metric before passing to calc engine
-  if (unitSystem === 'imperial') {
-    heightCm = toCm(heightCm);
-    weightKg = toKg(weightKg);
+  if (window.unitSystem === 'imperial') {
+    heightCm = window.toCm(heightCm);
+    weightKg = window.toKg(weightKg);
   }
 
   const data = {
@@ -453,6 +452,10 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
 
 <!-- ═══════════ Navigation JS ═══════════ -->
 <script>
+// Unit toggle listeners (regular script — avoids module-scoped event issues)
+document.getElementById('unit-metric').addEventListener('click', () => window.setUnit('metric'));
+document.getElementById('unit-imperial').addEventListener('click', () => window.setUnit('imperial'));
+
 // Hamburger toggle
 const hamburger = document.querySelector('.hamburger');
 const mobileNav = document.querySelector('.mobile-nav');

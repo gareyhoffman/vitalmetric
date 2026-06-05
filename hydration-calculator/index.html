@@ -120,13 +120,12 @@ select.input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xml
 import { calcHydration } from 'calculators/hydration.js';
 const $=id=>document.getElementById(id);
 const wi=$('input-weight'), ai=$('input-activity'), ci=$('input-climate');
-let unit='metric';
-const toKg=l=>Math.round(l*0.453592),toLbs=k=>Math.round(k/0.453592);
-$('unit-metric').addEventListener('click',()=>{unit='metric';const v=parseFloat(wi.value);if(!isNaN(v))wi.value=toKg(v);$('unit-label-weight').textContent='(kg)';wi.placeholder='78';$('unit-metric').classList.add('active');$('unit-imperial').classList.remove('active')});
-$('unit-imperial').addEventListener('click',()=>{unit='imperial';const v=parseFloat(wi.value);if(!isNaN(v))wi.value=toLbs(v);$('unit-label-weight').textContent='(lbs)';wi.placeholder='172';$('unit-imperial').classList.add('active');$('unit-metric').classList.remove('active')});
+window.unit='metric';
+window.toKg=l=>Math.round(l*0.453592);
+window.toLbs=k=>Math.round(k/0.453592);
 
 function compute(){
-  let w=parseInt(wi.value,10);if(unit==='imperial')w=toKg(w);
+  let w=parseInt(wi.value,10);if(window.unit==='imperial')w=window.toKg(w);
   const r=calcHydration({weightKg:w,activityLevel:ai.value,climate:ci.value});
   if(r.error)return;
   $('result-main').textContent=r.liters;$('result-oz').textContent=r.ounces+' oz';$('result-cups').textContent=r.cups+' cups';$('electrolyte-tip').textContent='💡 '+r.electrolyteTip;
@@ -134,6 +133,13 @@ function compute(){
 $('calc-btn').addEventListener('click',compute);[wi,ai,ci].forEach(e=>e.addEventListener('keydown',ev=>{if(ev.key==='Enter')compute()}));
 compute();
 if(window.location.hostname==='localhost'||window.location.hostname.includes('github.io')){document.querySelectorAll('link[rel="stylesheet"]').forEach(el=>{const h=el.getAttribute('href');if(h&&!h.includes('?'))el.setAttribute('href',h+'?t='+Date.now())})}
+</script>
+<script>
+// Unit toggle handlers (regular script — not module-scoped, avoids module event issues)
+const $=id=>document.getElementById(id);
+const wi=$('input-weight');
+$('unit-metric').addEventListener('click',()=>{window.unit='metric';const v=parseFloat(wi.value);if(!isNaN(v))wi.value=window.toKg(v);$('unit-label-weight').textContent='(kg)';wi.placeholder='78';$('unit-metric').classList.add('active');$('unit-imperial').classList.remove('active')});
+$('unit-imperial').addEventListener('click',()=>{window.unit='imperial';const v=parseFloat(wi.value);if(!isNaN(v))wi.value=window.toLbs(v);$('unit-label-weight').textContent='(lbs)';wi.placeholder='172';$('unit-imperial').classList.add('active');$('unit-metric').classList.remove('active')});
 </script>
 <script>
 const hb=document.querySelector('.hamburger'),mn=document.querySelector('.mobile-nav'),mc=document.querySelector('.mobile-nav-close');
