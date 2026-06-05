@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<base href="/vitalmetric/">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Weight Loss Planner — VitalMetric</title>
@@ -9,7 +10,7 @@
 <meta property="og:description" content="Weight loss timeline with weekly milestones. See exactly when you'll reach your goal.">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="stylesheet" href="../css/styles.css?t=DEV">
+<link rel="stylesheet" href="css/styles.css?t=DEV">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Ccircle cx='60' cy='60' r='48' stroke='%230A6E6E20' stroke-width='8' fill='none'/%3E%3Ccircle cx='60' cy='60' r='52' stroke='%230A6E6E' stroke-width='5' fill='none' stroke-dasharray='120 206' stroke-dashoffset='20' stroke-linecap='round'/%3E%3Cpath d='M60 8 A52 52 0 0 1 103 38' stroke='%23FF6B4A' stroke-width='5' stroke-linecap='round' fill='none'/%3E%3Ccircle cx='60' cy='60' r='5' fill='%230A6E6E'/%3E%3Cline x1='60' y1='60' x2='82' y2='32' stroke='%230A6E6E' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E">
 <style>
 :root {
@@ -292,7 +293,7 @@ select.input { appearance: none; background-image: url("data:image/svg+xml,%3Csv
 </div></div></footer>
 
 <script type="module">
-import { calcWeightLoss } from '../calculators/weight-loss.js';
+import { calcWeightLoss } from 'calculators/weight-loss.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -493,5 +494,6 @@ const hb = document.querySelector('.hamburger'), mn = document.querySelector('.m
 hb.addEventListener('click', () => { mn.style.display='flex'; hb.setAttribute('aria-expanded','true'); });
 mc.addEventListener('click', () => { mn.style.display='none'; hb.setAttribute('aria-expanded','false'); });
 </script>
+
 </body>
 </html>

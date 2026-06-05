@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<base href="/vitalmetric/">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Hydration Calculator — VitalMetric</title>
@@ -8,7 +9,7 @@
 <meta property="og:title" content="Drink Smarter — VitalMetric">
 <meta property="og:description" content="Daily water intake by weight, activity, and climate. Free hydration calculator.">
 <meta property="og:type" content="website">
-<link rel="stylesheet" href="../css/styles.css?t=DEV">
+<link rel="stylesheet" href="css/styles.css?t=DEV">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Ccircle cx='60' cy='60' r='48' stroke='%230A6E6E20' stroke-width='8' fill='none'/%3E%3Ccircle cx='60' cy='60' r='52' stroke='%230A6E6E' stroke-width='5' fill='none' stroke-dasharray='120 206' stroke-dashoffset='20' stroke-linecap='round'/%3E%3Cpath d='M60 8 A52 52 0 0 1 103 38' stroke='%23FF6B4A' stroke-width='5' stroke-linecap='round' fill='none'/%3E%3Ccircle cx='60' cy='60' r='5' fill='%230A6E6E'/%3E%3Cline x1='60' y1='60' x2='82' y2='32' stroke='%230A6E6E' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E">
 <style>
 :root {--space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-5:20px;--space-6:24px;--space-8:32px;--space-10:40px;--text-xs:0.75rem;--text-sm:0.875rem;--text-base:1rem;--text-lg:1.125rem;--text-xl:1.25rem;--text-2xl:1.5rem;--text-3xl:1.875rem;--text-4xl:2.25rem;--text-5xl:3rem;--text-6xl:4rem;--color-primary:#0A6E6E;--color-primary-dark:#085A5A;--color-primary-light:#D4ECE6;--color-accent:#FF6B4A;--color-bg:#F4F7F7;--color-surface:#FFFFFF;--color-text:#1A1E1E;--color-text-muted:#4A5A5A;--color-text-faint:#7A8E8E;--color-border:#D4DCDC;--color-border-light:#E4EAEA;--color-success:#2E9E6E;--radius-sm:6px;--radius-lg:12px;--radius-xl:16px;--shadow-sm:0 1px 3px rgba(0,0,0,0.06);--shadow-lg:0 4px 24px rgba(0,0,0,0.08);--border-width:1px}
@@ -116,7 +117,7 @@ select.input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xml
 <footer class="footer"><div class="content"><div class="footer-grid"><div class="footer-nav"><a href="/">Metabolic Age</a><a href="/body-composition/">Body Comp</a><a href="/macro-calculator/">Macro Calc</a><a href="/hydration-calculator/">Hydration</a><a href="/methodology/">Methodology</a><a href="/about/">About</a><a href="/privacy/">Privacy</a></div><p class="footer-copy">© 2026 VitalMetric</p></div></div></footer>
 
 <script type="module">
-import { calcHydration } from '../calculators/hydration.js';
+import { calcHydration } from 'calculators/hydration.js';
 const $=id=>document.getElementById(id);
 const wi=$('input-weight'), ai=$('input-activity'), ci=$('input-climate');
 let unit='metric';
@@ -138,5 +139,6 @@ if(window.location.hostname==='localhost'||window.location.hostname.includes('gi
 const hb=document.querySelector('.hamburger'),mn=document.querySelector('.mobile-nav'),mc=document.querySelector('.mobile-nav-close');
 hb.addEventListener('click',()=>{mn.style.display='flex';hb.setAttribute('aria-expanded','true')});mc.addEventListener('click',()=>{mn.style.display='none';hb.setAttribute('aria-expanded','false')});
 </script>
+
 </body>
 </html>

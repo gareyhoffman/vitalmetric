@@ -98,7 +98,8 @@ describe('Page structure', () => {
         }
 
         it('imports a calculator module', () => {
-          expect(html).toMatch(/import.*from.*\.\.\/calculators\/|import.*from.*\.\/calculators\//);
+          // Accept both ../calculators/ (root-relative) and calculators/ (base-relative)
+          expect(html).toMatch(/import.*from.*(?:\.\.\/)?calculators\//);
         });
       }
     });
@@ -124,7 +125,8 @@ describe('Navigation links', () => {
       });
 
       it('only links to known pages', () => {
-        const hrefs = [...html.matchAll(/href="(\/[^"?]*\/)"/g)].map(m => m[1]);
+        // Only check <a> links, not <base> or other elements
+        const hrefs = [...html.matchAll(/<a[^>]*href="(\/[^"?]*\/)"/g)].map(m => m[1]);
         for (const href of hrefs) {
           expect(KNOWN_PATHS).toContain(href);
         }
@@ -254,10 +256,31 @@ describe('Favicon', () => {
 
       it('uses the gauge logo SVG, not an emoji', () => {
         expect(html).toContain('rel="icon"');
-        // Should contain the gauge SVG path, not a text emoji
         expect(html).toContain('stroke-dasharray');
-        // Should NOT contain an emoji favicon
         expect(html).not.toMatch(/<link rel="icon"[^>]*<text y=['"]\.9em/);
+      });
+    });
+  }
+});
+
+describe('GitHub Pages subpath', () => {
+  for (const page of PAGES) {
+    describe(page.title, () => {
+      const html = loadPage(page.path);
+      if (!html) return;
+
+      it('has <base href="/vitalmetric/"> for subpath hosting', () => {
+        expect(html).toContain('<base href="/vitalmetric/">');
+      });
+
+      it('no href="../" paths remain (all asset paths relative to base)', () => {
+        const matches = html.match(/href="\.\.\//g);
+        expect(matches).toBeNull();
+      });
+
+      it('no from "../" paths remain in JS imports', () => {
+        const matches = html.match(/from '\.\.\//g);
+        expect(matches).toBeNull();
       });
     });
   }
