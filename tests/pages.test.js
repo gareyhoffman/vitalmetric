@@ -112,17 +112,11 @@ describe('Navigation links', () => {
       if (!html) return;
 
       it('all sub-page hrefs have trailing slashes', () => {
-        // Find all href="/something" patterns
         const hrefs = [...html.matchAll(/href="(\/[^"]*)"/g)].map(m => m[1]);
-
         for (const href of hrefs) {
-          // Root is allowed without trailing slash
           if (href === '/') continue;
-          // External URLs, anchors, mailto ok
           if (href.startsWith('http') || href.startsWith('#') || href.startsWith('mailto')) continue;
-          // Dev query params ok
           const pathOnly = href.split('?')[0];
-          // Must end with /
           expect(pathOnly.endsWith('/'),
             `"${href}" in ${page.path} should end with /`
           ).toBe(true);
@@ -137,15 +131,119 @@ describe('Navigation links', () => {
       });
 
       it('root link does NOT have trailing slash', () => {
-        // Check that href="/" exists (not href="//")
-        const rootLinks = [...html.matchAll(/href="\/"/g)];
-        // Should have at least 1 root link (header brand usually)
-        // No assertion needed here — just that no href="//" exists
         const badRoot = [...html.matchAll(/href="\/\/"/g)];
         expect(badRoot.length).toBe(0);
       });
     });
   }
+});
+
+// ── Tool card navigation (JS-driven, no href) ──
+const TOOL_CARD_LABEL_MAP = {
+  'Metabolic Age Calculator': '/',
+  'Body Composition Dashboard': '/body-composition/',
+  'Macro Calculator': '/macro-calculator/',
+  'Hydration Calculator': '/hydration-calculator/',
+  'Weight Loss Planner': '/weight-loss-planner/',
+  'Fasting Tracker': '/fasting-calculator/',
+};
+
+const NEXT_BTN_LABEL_MAP = {
+  'Check Body Composition →': '/body-composition/',
+  'Check Metabolic Age →': '/',
+  'Check Macros →': '/macro-calculator/',
+  'Check Body Comp →': '/body-composition/',
+  'Check Macro Targets →': '/macro-calculator/',
+};
+
+describe('JS-driven navigation', () => {
+  describe('index.html — tool cards', () => {
+    const html = loadPage('index.html');
+    if (!html) return;
+
+    const toolCardRegex = /<article[^>]*class="tool-card"[^>]*role="button"[^>]*aria-label="([^"]+)"/g;
+    const cards = [...html.matchAll(toolCardRegex)].map(m => m[1]);
+
+    it('has all 6 tool cards', () => {
+      expect(cards.length).toBe(6);
+    });
+
+    for (const label of Object.keys(TOOL_CARD_LABEL_MAP)) {
+      it(`tool card "${label}" maps to ${TOOL_CARD_LABEL_MAP[label]}`, () => {
+        expect(cards).toContain(label);
+        // Verify the mapped path exists as a file
+        const target = TOOL_CARD_LABEL_MAP[label];
+        const fsTarget = target === '/' ? 'index.html' : `${target.replace(/^\/|\/$/g, '')}/index.html`;
+        expect(existsSync(resolve(BASE, fsTarget))).toBe(true);
+      });
+    }
+
+    it('every tool card aria-label has a valid mapping', () => {
+      for (const label of cards) {
+        expect(TOOL_CARD_LABEL_MAP[label],
+          `No JS mapping for tool card "${label}"`
+        ).toBeDefined();
+      }
+    });
+
+    it('JS mapping object in index.html matches all tool cards', () => {
+      // Verify the inline JS map contains all expected entries
+      for (const [label, path] of Object.entries(TOOL_CARD_LABEL_MAP)) {
+        expect(html).toContain(`'${label}': '${path}'`);
+      }
+    });
+  });
+
+  describe('next buttons across pages', () => {
+    for (const page of PAGES) {
+      describe(page.title, () => {
+        const html = loadPage(page.path);
+        if (!html) return;
+
+        // Static pages don't need next buttons
+        if (page.type === 'static') {
+          it('has no next button (static page)', () => {
+            expect(html).not.toMatch(/id="next-btn"/);
+          });
+          return;
+        }
+
+        it('has a #next-btn or forward-nav link', () => {
+          // Fasting tracker is app-like, has no next button
+          if (page.path === 'fasting-calculator/index.html') return;
+          const hasBtn = /id="next-btn"/.test(html);
+          const hasLink = /Check.*→/.test(html) && /href=/.test(html);
+          expect(hasBtn || hasLink,
+            `Page ${page.path} should have either #next-btn or a "Check →" link`
+          ).toBe(true);
+        });
+
+        // Verify forward link resolves (either button or anchor)
+        const btnMatch = html.match(/id="next-btn"[^>]*>([^<]+)</);
+        const anchorMatch = html.match(/class="btn[^"]*"[^>]*href="([^"]+)"[^>]*>([^<]+→)</);
+        const label = btnMatch?.[1] || anchorMatch?.[2];
+        const anchorHref = anchorMatch?.[1];
+
+        if (btnMatch && label && NEXT_BTN_LABEL_MAP[label]) {
+          it(`next button "${label}" maps to ${NEXT_BTN_LABEL_MAP[label]}`, () => {
+            const target = NEXT_BTN_LABEL_MAP[label];
+            const fsTarget = target === '/' ? 'index.html' : `${target.replace(/^\/|\/$/g, '')}/index.html`;
+            expect(existsSync(resolve(BASE, fsTarget))).toBe(true);
+          });
+        }
+
+        if (anchorHref) {
+          it(`forward link "${anchorHref}" resolves to existing page`, () => {
+            const target = anchorHref;
+            const fsTarget = target === '/' ? 'index.html' : `${target.replace(/^\/|\/$/g, '')}/index.html`;
+            expect(existsSync(resolve(BASE, fsTarget)),
+              `Link "${anchorHref}" in ${page.path} should resolve to ${fsTarget}`
+            ).toBe(true);
+          });
+        }
+      });
+    }
+  });
 });
 
 describe('Favicon', () => {
